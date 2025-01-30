@@ -1,0 +1,13 @@
+# Node.js dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+
+# Google Cloud credentials (stored in config folder)
+config/customerrecords-7ce19a477b7a.json
+
+# Logs and cache files
+*.log
+npm-debug.log*

@@ -41,6 +41,21 @@ app.get("/customers", (req, res) => {
         });
 })
 
+app.get("/customer/:id",async(req,res)=>{
+  const { id } = req.params;
+  try {
+    const result = await ds.getCustomer(id);
+    if (!result) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+    res.json(result);
+  }
+  catch(error){
+    res.status(500).json({message:error.message})
+  }
+})
+
+
   app.put('/customers/:id', upload.array('documents'), async (req, res) => {
     try {
       const { id } = req.params;
@@ -55,6 +70,22 @@ app.get("/customers", (req, res) => {
       res.status(500).json({ message: 'Error updating customer', error: error.message });
     }
   });
+
+  app.delete('/customers/:id',async(req,res)=>{
+    try{
+      const {id}=req.params;
+      console.log("param")
+      const result=await ds.deleteCustomer(id)
+      res.json(result)
+    }
+    catch(error){
+        res.status(500).json({ message: 'Error deleting customer', error: error.message });
+    }
+
+   
+  })
+
+
 
   // app.get('/customers/:customerId/files/:fileId', async (req, res) => {
   //   try {
