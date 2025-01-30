@@ -5,7 +5,8 @@ const db = require("./db");
 
 // Path to your Google service account credentials
 const path = require("path"); // ✅ Import path module
-const KEYFILEPATH = path.join(__dirname, "../customerrecords-7ce19a477b7a.json"); // ✅ Correct absolute path
+const { error } = require("console");
+const KEYFILEPATH = path.join(__dirname, "../config/customerrecords-7ce19a477b7a.json"); // ✅ Correct absolute path
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
 
 // Initialize Google Auth and Drive API client
@@ -124,6 +125,12 @@ const viewDetails = () => {
     });
 };
 
+const getCustomer=async id=>{
+    let customer=await db.Customer.findById(id)
+    if(!customer) throw new Error("Customer not found")
+        return customer
+}
+
 // Update customer details and handle document uploads
 const updateCustomer = async (id, updatedData, removedFiles, newFiles) => {
     try {
@@ -198,11 +205,26 @@ const getFile = async (customerId, fileId) => {
         throw new Error(error.message);
     }
 };
+async function deleteCustomer(id) {
+    const customer = await db.Customer.findById(id);
+    if (!customer) throw new Error('Customer not found');
+console.log("fileID",customer.fileId)
+    // Delete document from Google Drive
+    if (customer.fileId) {
+        await drive.files.delete({ fileId: customer.fileId });
+    }
+
+    // Delete customer record from MongoDB
+    await db.Customer.findByIdAndDelete(id);
+    return { message: "customer deleted succesfully"};
+}
 
 module.exports = {
     create,
     viewDetails,
     updateCustomer,
     getFile,
-    uploadToDrive
+    uploadToDrive,
+    deleteCustomer,
+    getCustomer
 };
